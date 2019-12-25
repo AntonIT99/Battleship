@@ -40,7 +40,7 @@ public class Game extends JFrame implements KeyListener, MouseListener, MouseMot
 	private ImagePanel pauseQuit = new ImagePanel("quit1.png");
 	private ImagePanel pauseQuitPressed = new ImagePanel("quit2.png");
     private Grid grid;
-    private JLabel timeLabel;
+    private JLabel timeLabel, defeatLabel;
     private JScrollBar scrollbarH, scrollbarW;
     private Point MouseMovement = new Point(); //permet de detecter le mouvement du clic droit par la différentielle avec MouseRPosition
     private Point MouseRPosition = new Point(); //position du clic droit
@@ -81,6 +81,11 @@ public class Game extends JFrame implements KeyListener, MouseListener, MouseMot
         timeLabel.setBounds(20,10, 100, 50);
         timeLabel.setForeground(Color.RED);
         timeLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        defeatLabel = new JLabel();
+        defeatLabel.setBounds(600, 20, 1000, 200);
+        defeatLabel.setForeground(Color.RED);
+        defeatLabel.setFont(new Font("Arial", Font.BOLD, 200));
+        defeatLabel.setText("Defeat");
 		grid = new Grid(size, Main.WRES/2,Main.HRES/2);		
 		grid.addMouseListener(this);
 		grid.addMouseMotionListener(this);
@@ -646,12 +651,31 @@ public class Game extends JFrame implements KeyListener, MouseListener, MouseMot
 			globalPanel.remove(victoryScreen);
 			this.dispose();
 			gameIsRunning = false;
-		} else if (winnerID == 2) { // defaite du joueur
+		} if (winnerID == 2) { // defaite du joueur
+			
 			defeatScreen.setPosition(Main.WRES/2, Main.HRES/2);
 			globalPanel.add(defeatScreen, 0);
 			repaint();
 			delay(3);
 			globalPanel.remove(defeatScreen);
+			repaint();
+			
+			
+			globalPanel.add(defeatLabel);
+			
+			//active l'affichage de tous les bateaux de l'IA
+			for (int i = 0; i<AIships.size(); i++)
+			{
+					grid.add(AIships.get(i).display);
+			}
+			
+			//active l'affichage des positions de tir du joueur
+			for (int i = 0; i<firePositionsPlayer.size(); i++)
+			{
+				firePositionsPlayer.get(i).drawState(grid);
+			}
+			
+			delay(20);
 			this.dispose();
 			gameIsRunning = false;
 		} else { //pas encore de vainqueur, la partie continue
